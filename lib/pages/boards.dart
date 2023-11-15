@@ -10,6 +10,13 @@ class Boards extends StatefulWidget {
 class _BoardsState extends State<Boards> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        title: Text("Natter", style: TextStyle(color: Colors.white),),
+        backgroundColor: Colors.black,
+      ),
+      
+    );
   }
 }

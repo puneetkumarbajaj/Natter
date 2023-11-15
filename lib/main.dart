@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:natter/pages/splash.dart';
 import 'package:natter/utilities/navBar.dart';
 
 void main() {
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.cyan),
         useMaterial3: true,
       ),
-      home: const MyHomePage(),
+      home: Splash(),
     );
   }
 }
@@ -31,6 +32,6 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    return NavBar();
+    return Splash();
   }
 }

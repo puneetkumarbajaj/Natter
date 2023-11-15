@@ -9,6 +9,13 @@ class Settings extends StatefulWidget {
 class _SettingsState extends State<Settings> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        title: Text("Settings", style: TextStyle(color: Colors.white),),
+        backgroundColor: Colors.black,
+      ),
+      
+    );
   }
 }
