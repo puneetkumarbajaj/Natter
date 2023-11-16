@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:natter/utilities/navBar.dart';
-
+import 'package:google_fonts/google_fonts.dart';
 class Splash extends StatefulWidget {
   const Splash({super.key});
 
@@ -27,7 +27,7 @@ class _SplashState extends State<Splash> {
       backgroundColor: Colors.black,
       body: Center(
         child: Container(
-          child: Text('N', style: TextStyle(fontSize: 48, fontWeight: FontWeight.normal, color: Colors.cyan,),),
+          child: Text('N', style: GoogleFonts.pacifico(textStyle: TextStyle(fontSize: 48, color: Colors.cyan))),
         ),
       ),
     );
