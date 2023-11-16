@@ -15,7 +15,24 @@ class _SettingsState extends State<Settings> {
         title: Text("Settings", style: TextStyle(color: Colors.white),),
         backgroundColor: Colors.black,
       ),
-      
+      body: Center(
+        child: Column(
+          children: [
+            Container(
+              padding: EdgeInsets.all(20),
+              child: Text("Edit Personal Information" , style: TextStyle(color: Colors.white),),
+            ),
+            Container(
+              padding: EdgeInsets.all(20),
+              child: Text("Change Login information" , style: TextStyle(color: Colors.white),),
+            ),
+            Container(
+              padding: EdgeInsets.all(20),
+              child: Text("Logout" , style: TextStyle(color: Colors.red),),
+            )
+          ],
+        ),
+      ),
     );
   }
 }
