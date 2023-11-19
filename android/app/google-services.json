@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "858905525098",
+    "project_id": "natter-53722",
+    "storage_bucket": "natter-53722.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:858905525098:android:2408e4938112cf2979c313",
+        "android_client_info": {
+          "package_name": "com.example.natter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBtiYaq5uH9QaENJRvtDXzYOArgOJZWruo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

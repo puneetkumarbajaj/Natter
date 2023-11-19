@@ -4,7 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import '../utilities/my_text_field.dart';
 
 class RegisterPage extends StatefulWidget {
-  const RegisterPage({super.key});
+  final void Function()? onTap;
+  const RegisterPage({super.key, required this.onTap});
 
   @override
   State<RegisterPage> createState() => _RegisterPageState();
@@ -17,6 +18,9 @@ class _RegisterPageState extends State<RegisterPage> {
   final firstnameController = TextEditingController();
   final lastnameController = TextEditingController();
   final confirmPasswordController = TextEditingController();
+
+  void signUp(){}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,7 +55,7 @@ class _RegisterPageState extends State<RegisterPage> {
             //confirm password textfield
             //Sign IN button
             ElevatedButton(
-              onPressed: (){},
+              onPressed: signUp,
               child: Text("Register"),
               style: ButtonStyle(
                 backgroundColor: MaterialStatePropertyAll<Color>(Colors.cyan),
@@ -60,16 +64,19 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
             const SizedBox(height: 5,),
             //register now
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text("Already have an account?" , style: TextStyle(color: Colors.white),),
                 SizedBox(width: 4,),
-                Text(
-                  "Sign In instead",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.cyan,
+                GestureDetector(
+                  onTap: widget.onTap,
+                  child: Text(
+                    "Sign In instead",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.cyan,
+                    ),
                   ),
                 )
               ],
