@@ -19,7 +19,6 @@ class _RegisterPageState extends State<RegisterPage> {
   final usernameController = TextEditingController();
   final firstnameController = TextEditingController();
   final lastnameController = TextEditingController();
-  final confirmPasswordController = TextEditingController();
 
   void signUp() async {
     // if(passwordController.text != confirmPasswordController){
@@ -30,7 +29,13 @@ class _RegisterPageState extends State<RegisterPage> {
     // }
     final authService = Provider.of<AuthService>(context, listen: false);
     try {
-      await authService.signUpWithEmailandPassword(emailController.text, passwordController.text,);
+      await authService.signUpWithEmailandPassword(
+        emailController.text, 
+        passwordController.text,
+        usernameController.text,
+        firstnameController.text,
+        lastnameController.text,
+      );
     } catch (e) {
        ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.toString())),
