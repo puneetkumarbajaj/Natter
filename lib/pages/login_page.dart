@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:natter/utilities/auth/auth_service.dart';
 import 'package:natter/utilities/my_text_field.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   final void Function()? onTap;
@@ -13,8 +15,14 @@ class _LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
-  void signIn() {
-    final auth
+  void signIn() async {
+    final authService = Provider.of<AuthService>(context, listen: false);
+
+    try{
+      await authService.signInWithEmailandPassword(emailController.text, passwordController.text);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+    }
   }
 
   @override

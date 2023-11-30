@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:natter/utilities/auth/auth_service.dart';
+import 'package:provider/provider.dart';
 
 import '../utilities/my_text_field.dart';
 
@@ -19,7 +21,22 @@ class _RegisterPageState extends State<RegisterPage> {
   final lastnameController = TextEditingController();
   final confirmPasswordController = TextEditingController();
 
-  void signUp(){}
+  void signUp() async {
+    // if(passwordController.text != confirmPasswordController){
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     const SnackBar(content: Text("Password do not match!")),
+    //   );
+    //   return;
+    // }
+    final authService = Provider.of<AuthService>(context, listen: false);
+    try {
+      await authService.signUpWithEmailandPassword(emailController.text, passwordController.text,);
+    } catch (e) {
+       ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

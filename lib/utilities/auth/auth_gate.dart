@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:natter/main.dart';
 import 'package:natter/utilities/auth/login_or_register.dart';
+import 'package:natter/utilities/navBar.dart';
 
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
@@ -13,7 +13,7 @@ class AuthGate extends StatelessWidget {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return const MyHomePage();
+            return const NavBar();
           }
           else{
             return const LoginOrRegister();
