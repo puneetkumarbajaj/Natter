@@ -2,14 +2,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class AuthService extends ChangeNotifier{
+class AuthService extends ChangeNotifier {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
 
   //sign in
-  Future<UserCredential> signInWithEmailandPassword(String email, String password) async{
-    try{
-      UserCredential userCredential = await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
+  Future<UserCredential> signInWithEmailandPassword(
+      String email, String password) async {
+    try {
+      UserCredential userCredential = await _firebaseAuth
+          .signInWithEmailAndPassword(email: email, password: password);
       return userCredential;
     } on FirebaseAuthException catch (e) {
       throw Exception(e.code);
@@ -17,19 +19,21 @@ class AuthService extends ChangeNotifier{
   }
 
   //create a new user
-  Future<UserCredential> signUpWithEmailandPassword(String email, password, username, firstName, lastName) async {
+  Future<UserCredential> signUpWithEmailandPassword(
+      String email, password, username, firstName, lastName) async {
     try {
-      UserCredential userCredential = 
-        await _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
+      UserCredential userCredential = await _firebaseAuth
+          .createUserWithEmailAndPassword(email: email, password: password);
 
-        //After creating the user, create a new document for the user 
+      //After creating the user, create a new document for the user
       _fireStore.collection('users').doc(userCredential.user!.uid).set({
-        'uid' : userCredential.user!.uid,
-        'email' : email,
+        'uid': userCredential.user!.uid,
+        'email': email,
         'username': username,
         'firstName': firstName,
         'lastName': lastName,
-        
+        'role': "user",
+        'registration_time': DateTime.now(),
       });
       return userCredential;
     } on FirebaseAuthException catch (e) {
@@ -37,9 +41,8 @@ class AuthService extends ChangeNotifier{
     }
   }
 
-
   //sign out
-  Future<void> signOut() async{
+  Future<void> signOut() async {
     return await FirebaseAuth.instance.signOut();
   }
 }

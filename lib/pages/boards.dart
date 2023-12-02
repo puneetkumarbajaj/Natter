@@ -13,11 +13,6 @@ class Boards extends StatefulWidget {
 
 class _BoardsState extends State<Boards> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  List chats = [
-    ["Chat 1"],
-    ["Chat 2"],
-    ["Chat 3"]
-  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(

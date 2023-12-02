@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:natter/pages/splash.dart';
 import 'package:natter/utilities/auth/auth_service.dart';
+import 'package:natter/utilities/colors.dart';
 import 'package:natter/utilities/navBar.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
@@ -27,10 +28,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Natter',
-      theme: ThemeData(
-        colorScheme:
-            ColorScheme.fromSeed(seedColor: Colors.cyan, primary: Colors.white),
-        useMaterial3: true,
+      theme: ThemeData.dark().copyWith(
+        scaffoldBackgroundColor: mobileBackgroundColor,
       ),
       home: Splash(),
     );
