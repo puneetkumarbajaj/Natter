@@ -13,20 +13,23 @@ class Boards extends StatefulWidget {
 
 class _BoardsState extends State<Boards> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  List chats = [["Chat 1"], ["Chat 2"], ["Chat 3"]];
+  List chats = [
+    ["Chat 1"],
+    ["Chat 2"],
+    ["Chat 3"]
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        title: Text("Natter", style: GoogleFonts.pacifico(textStyle: TextStyle(color: Colors.white, fontSize: 25),)),
         backgroundColor: Colors.black,
-      ),
-
-
-    );
-
-
+        appBar: AppBar(
+          title: Text("Natter",
+              style: GoogleFonts.pacifico(
+                textStyle: TextStyle(color: Colors.white, fontSize: 25),
+              )),
+          backgroundColor: Colors.black,
+        ),
+        body: _buildUserList());
 
     // return Scaffold(
     //   backgroundColor: Colors.black,
@@ -52,40 +55,48 @@ class _BoardsState extends State<Boards> {
     // );
   }
 
-  Widget _buildUserlist(DocumentSnapshot document){
+  Widget _buildUserList() {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('users').snapshots(), 
-      builder: (context, snapshot){
-        if(snapshot.hasError){
-          return const Text('error');
-        }
-        if(snapshot.connectionState == ConnectionState.waiting){
-          return const Text('loading..');
-        }
-        return ListView(
-          children: snapshot.data!.docs.map<Widget>((doc) => _buildUserListItem(doc)).toList(),
-        );
-      }
-    );
+        stream: FirebaseFirestore.instance.collection('users').snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return const Text('error', style: TextStyle(color: Colors.white));
+          }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Text(
+              'loading..',
+              style: TextStyle(color: Colors.white),
+            );
+          }
+          return ListView(
+            children: snapshot.data!.docs
+                .map<Widget>((doc) => _buildUserListItem(doc))
+                .toList(),
+          );
+        });
   }
 
-  Widget _buildUserListItem(DocumentSnapshot document){
+  Widget _buildUserListItem(DocumentSnapshot document) {
     Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
 
-    if(_auth.currentUser!.email != data['email']){
+    if (_auth.currentUser!.email != data['email']) {
       return ListTile(
-        title: Text(data['email']),
-        onTap: (){
+        title: Text(
+          data['email'],
+          style: TextStyle(color: Colors.white),
+        ),
+        onTap: () {
           Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ChatPage(
-              receiverUserEmail: data['email'],
-              receiverUserID: data['uid'],
-            ),)
-          );
+              context,
+              MaterialPageRoute(
+                builder: (context) => ChatPage(
+                  receiverUserEmail: data['email'],
+                  receiverUserID: data['uid'],
+                ),
+              ));
         },
       );
-    } else{
+    } else {
       return Container();
     }
   }
