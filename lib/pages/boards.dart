@@ -13,86 +13,70 @@ class Boards extends StatefulWidget {
 
 class _BoardsState extends State<Boards> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.black,
         appBar: AppBar(
-          title: Text("Natter",
+          title: Text("Natter Boards",
               style: GoogleFonts.pacifico(
                 textStyle: TextStyle(color: Colors.white, fontSize: 25),
               )),
           backgroundColor: Colors.black,
         ),
-        body: _buildUserList());
-
-    // return Scaffold(
-    //   backgroundColor: Colors.black,
-    //   appBar: AppBar(
-    //     title: Text("Natter", style: GoogleFonts.pacifico(textStyle: TextStyle(color: Colors.white, fontSize: 25),)),
-    //     backgroundColor: Colors.black,
-    //   ),
-    //   body: ListView.builder(
-    //     padding: EdgeInsets.all(20),
-    //     itemCount: chats.length,
-    //     prototypeItem: ListTile(
-    //       contentPadding: EdgeInsets.all(10),
-    //       leading: CircleAvatar(backgroundColor: Colors.cyan, radius: 10,),
-    //       title: Text(chats.first.first, style: TextStyle(color: Colors.white)),
-    //     ),
-    //     itemBuilder: (context, index) {
-    //       return ListTile(
-    //         leading: CircleAvatar(backgroundColor: Colors.cyan, radius: 30,),
-    //         title: Text(chats[index][0], style: TextStyle(color: Colors.white)),
-    //       );
-    //     },
-    //   ),
-    // );
+        body: _buildBoardList());
   }
 
-  Widget _buildUserList() {
+  Widget _buildBoardList() {
+    String currentUserId = _auth.currentUser!.uid;
     return StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('users').snapshots(),
+        stream: FirebaseFirestore.instance
+            .collection('boards')
+            .where('memberIds', arrayContains: currentUserId)
+            .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return const Text('error', style: TextStyle(color: Colors.white));
+            return const Text('Error', style: TextStyle(color: Colors.white));
           }
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Text(
-              'loading..',
-              style: TextStyle(color: Colors.white),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(
+                child: Text('No boards found',
+                    style: TextStyle(color: Colors.white)));
+          }
+
           return ListView(
             children: snapshot.data!.docs
-                .map<Widget>((doc) => _buildUserListItem(doc))
+                .map<Widget>((doc) => _buildBoardListItem(doc))
                 .toList(),
           );
         });
   }
 
-  Widget _buildUserListItem(DocumentSnapshot document) {
+  Widget _buildBoardListItem(DocumentSnapshot document) {
     Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
 
-    if (_auth.currentUser!.email != data['email']) {
-      return ListTile(
-        title: Text(
-          data['email'],
-          style: TextStyle(color: Colors.white),
-        ),
-        onTap: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ChatPage(
-                  receiverUserEmail: data['email'],
-                  receiverUserID: data['uid'],
-                ),
-              ));
-        },
-      );
-    } else {
-      return Container();
-    }
+    return ListTile(
+      leading: CircleAvatar(
+        backgroundImage: NetworkImage(data['image']),
+        backgroundColor: Colors.transparent,
+      ),
+      title: Text(
+        data['name'],
+        style: TextStyle(color: Colors.white),
+      ),
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChatPage(
+                boardId: document.id,
+              ),
+            ));
+      },
+    );
   }
 }

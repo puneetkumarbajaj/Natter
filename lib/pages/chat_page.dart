@@ -7,12 +7,10 @@ import 'package:natter/utilities/chat_bubble.dart';
 import 'package:natter/utilities/my_text_field.dart';
 
 class ChatPage extends StatefulWidget {
-  final String receiverUserEmail;
-  final String receiverUserID;
+  final String boardId;
   const ChatPage({
     super.key,
-    required this.receiverUserEmail,
-    required this.receiverUserID,
+    required this.boardId,
   });
 
   @override
@@ -22,12 +20,23 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   final TextEditingController _messageController = TextEditingController();
   final ChatService _chatService = ChatService();
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+
+  final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
+
+  Future<String> _getBoardName() async {
+    var boardDocument =
+        await _fireStore.collection('boards').doc(widget.boardId).get();
+    if (boardDocument.exists) {
+      return boardDocument.data()!['name'];
+    } else {
+      return 'Group Chat';
+    }
+  }
 
   void sendMessage() async {
     if (_messageController.text.isNotEmpty) {
-      await _chatService.sendMessage(
-          widget.receiverUserID, _messageController.text);
+      await _chatService.sendGroupMessage(
+          widget.boardId, _messageController.text);
       _messageController.clear();
     }
   }
@@ -36,54 +45,63 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          widget.receiverUserEmail,
-          style: TextStyle(color: Colors.white),
+        title: FutureBuilder<String>(
+          future: _getBoardName(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Text("Loading...", style: TextStyle(color: Colors.white));
+            }
+            if (snapshot.hasError) {
+              return Text("Error", style: TextStyle(color: Colors.white));
+            }
+            return Text(
+              snapshot.data ?? "Group Chat",
+              style: TextStyle(color: Colors.white),
+            );
+          },
         ),
         backgroundColor: Colors.black,
       ),
       body: Column(
         children: [
-          //messages
           Expanded(
             child: _buildMessageList(),
           ),
-
-          //user_input
           _buildMessageInput(),
-
-          const SizedBox(
-            height: 25,
-          )
+          const SizedBox(height: 25),
         ],
       ),
     );
   }
 
-  //buid message list
+  // Build message list for group chat
   Widget _buildMessageList() {
-    return StreamBuilder(
-        stream: _chatService.getMessages(
-            widget.receiverUserID, _firebaseAuth.currentUser!.uid),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Text("Error${snapshot.error}");
-          }
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Text("Loading..");
-          }
+    return StreamBuilder<QuerySnapshot>(
+      stream: _chatService.getGroupMessages(widget.boardId),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Text("Error: ${snapshot.error}");
+        }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator();
+        }
+        if (!snapshot.hasData) {
+          return const Text("No messages yet");
+        }
 
-          return ListView(
-            children: snapshot.data!.docs
-                .map((document) => _buildMessageItem(document))
-                .toList(),
-          );
-        });
+        return ListView(
+          children: snapshot.data!.docs.map((document) {
+            return _buildMessageItem(document);
+          }).toList(),
+        );
+      },
+    );
   }
 
-  //build message item
-  Widget _buildMessageItem(DocumentSnapshot document) {
+  // Build individual message item
+  Widget _buildMessageItem(QueryDocumentSnapshot document) {
     Map<String, dynamic> data = document.data() as Map<String, dynamic>;
+    FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
     var alignment = (data['senderId'] == _firebaseAuth.currentUser!.uid)
         ? Alignment.centerRight
@@ -92,7 +110,6 @@ class _ChatPageState extends State<ChatPage> {
     Timestamp firestoreTimestamp = data["timestamp"];
     DateTime dateTime = firestoreTimestamp.toDate();
     String formattedDateTime = DateFormat('yyyy-MM-dd HH:mm').format(dateTime);
-    ;
 
     return Container(
       alignment: alignment,
@@ -102,13 +119,9 @@ class _ChatPageState extends State<ChatPage> {
             : CrossAxisAlignment.start,
         children: [
           Text(data['senderEmail']),
-          const SizedBox(
-            height: 5,
-          ),
+          const SizedBox(height: 5),
           Text(formattedDateTime),
-          const SizedBox(
-            height: 5,
-          ),
+          const SizedBox(height: 5),
           ChatBubble(
             message: data['message'],
             color: (data['senderId'] == _firebaseAuth.currentUser!.uid)
@@ -120,13 +133,12 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  //view user input area
+  // User input area
   Widget _buildMessageInput() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 25.0),
       child: Row(
         children: [
-          //textfield
           Expanded(
             child: MyTextField(
               controller: _messageController,
@@ -134,13 +146,13 @@ class _ChatPageState extends State<ChatPage> {
               obscureText: false,
             ),
           ),
-
           IconButton(
-              onPressed: sendMessage,
-              icon: const Icon(
-                Icons.arrow_upward,
-                size: 40,
-              ))
+            onPressed: sendMessage,
+            icon: const Icon(
+              Icons.send,
+              size: 30,
+            ),
+          ),
         ],
       ),
     );
